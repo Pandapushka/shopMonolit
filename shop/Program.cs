@@ -17,6 +17,9 @@ namespace shop
             builder.Services.AddPostgreSqlDbContext(builder.Configuration);
             builder.Services.AddPostgreSqlIdentityContext();
             builder.Services.AddAdminInitializer();
+            builder.Services.AddConfigureIdentityOptions();
+            builder.Services.AddJwtTokenGenerator();
+            builder.Services.AddCors();
 
 
             builder.Services.AddScoped<IProductService, ProductService>();
@@ -36,8 +39,16 @@ namespace shop
                 var adminService = scope.ServiceProvider.GetRequiredService<AdminInitializerService>();
                 await adminService.InitializeAdminAsync();
             }
+            app.UseCors(o=>
+                o.AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin()
+                .WithExposedHeaders("*")
+                );
+
 
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
 

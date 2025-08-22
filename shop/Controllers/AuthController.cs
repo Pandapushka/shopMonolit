@@ -39,5 +39,29 @@ namespace shop.Controllers
             }
         }
 
+        [HttpPost("login")]
+        public async Task<ActionResult<ResponseServer<LoginResponseDTO>>> Login([FromBody] LoginRequestDTO loginRequestDTO)
+        {
+            try
+            {
+                if (loginRequestDTO == null)
+                    return BadRequest(ResponseServer<LoginResponseDTO>.Error("Модель входа не может быть пустой", 400));
+
+                if (!ModelState.IsValid)
+                    return BadRequest(ResponseServer<LoginResponseDTO>.Error("Некорректные данные валидации", 400));
+
+                var result = await _authService.Login(loginRequestDTO);
+                return Ok(ResponseServer<LoginResponseDTO>.Success(result, 200));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ResponseServer<LoginResponseDTO>.Error(ex.Message, 400));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseServer<LoginResponseDTO>.Error("Произошла ошибка при входе", 500));
+            }
+        }
+
     }
 }
