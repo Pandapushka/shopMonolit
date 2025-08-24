@@ -11,7 +11,14 @@ namespace shop
             var builder = WebApplication.CreateBuilder(args);
 
 
-            builder.Services.AddControllers();
+
+
+            builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                options.JsonSerializerOptions.WriteIndented = true;
+            });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGenCustomConfig();
             builder.Services.AddPostgreSqlDbContext(builder.Configuration);
@@ -24,6 +31,7 @@ namespace shop
 
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddCartService();
 
             var app = builder.Build();
 

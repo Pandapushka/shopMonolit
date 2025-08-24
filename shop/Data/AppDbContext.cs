@@ -26,6 +26,18 @@ namespace shop.Data
         {
             base.OnModelCreating(builder);
             builder.Entity<Product>().HasData(FakeProductGenerator.GenerateProductList());
+
+            builder.Entity<CartItem>()
+        .HasOne(ci => ci.Product)
+        .WithMany(p => p.CartItems)
+        .HasForeignKey(ci => ci.ProductId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<CartItem>()
+                .HasOne(ci => ci.ShoppingCart)
+                .WithMany(sc => sc.Items)
+                .HasForeignKey(ci => ci.ShoppingCartId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

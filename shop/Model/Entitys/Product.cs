@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using shop.Model.Entitys.Cart;
+using System.ComponentModel.DataAnnotations;
 
 namespace shop.Model.Entitys
 {
@@ -16,5 +17,7 @@ namespace shop.Model.Entitys
         [Required]
         public string Image { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
+
+        public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     }
 }
