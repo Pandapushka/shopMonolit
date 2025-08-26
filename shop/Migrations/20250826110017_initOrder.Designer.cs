@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using shop.Data;
@@ -11,9 +12,11 @@ using shop.Data;
 namespace shop.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250826110017_initOrder")]
+    partial class initOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -270,83 +273,6 @@ namespace shop.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("shop.Model.Entitys.Order.Order", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AppUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CustomerAddress")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CustomerEmail")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("OrderDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<double>("OrderTotalAmount")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("TotalCount")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
-
-                    b.ToTable("Order");
-                });
-
-            modelBuilder.Entity("shop.Model.Entitys.Order.OrderDetails", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ItemName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("OrderDetails");
-                });
-
             modelBuilder.Entity("shop.Model.Entitys.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -389,57 +315,57 @@ namespace shop.Migrations
                         new
                         {
                             Id = 1,
-                            Category = "Категория 1",
-                            Description = "Отношении экономической нашей.",
+                            Category = "Категория 3",
+                            Description = "Настолько изменений соображения нами процесс.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Невероятный Стальной Компьютер",
-                            Price = 2905.3400000000001,
+                            Name = "Маленький Резиновый Кошелек",
+                            Price = 4021.0999999999999,
                             SpecialTag = "Тег 3"
                         },
                         new
                         {
                             Id = 2,
-                            Category = "Категория 1",
-                            Description = "Обеспечивает место специалистов забывать обществом.",
+                            Category = "Категория 3",
+                            Description = "Рамки новых концепция.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Маленький Гранитный Ножницы",
-                            Price = 3202.98,
-                            SpecialTag = "Тег 2"
+                            Name = "Невероятный Натуральный Кошелек",
+                            Price = 1777.8399999999999,
+                            SpecialTag = "Тег 3"
                         },
                         new
                         {
                             Id = 3,
                             Category = "Категория 3",
-                            Description = "Финансовых участия прогресса общественной ресурсосберегающих выбранный.",
+                            Description = "Разработке путь уровня различных предложений разнообразный обуславливает различных ресурсосберегающих.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Маленький Резиновый Кепка",
-                            Price = 1612.8699999999999,
-                            SpecialTag = "Тег 2"
+                            Name = "Эргономичный Кожанный Берет",
+                            Price = 4264.1300000000001,
+                            SpecialTag = "Тег 1"
                         },
                         new
                         {
                             Id = 4,
-                            Category = "Категория 1",
-                            Description = "Задача идейные последовательного базы базы массового.",
+                            Category = "Категория 3",
+                            Description = "Сознания соображения условий повседневная степени напрямую важные этих создаёт деятельности.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Грубый Хлопковый Кошелек",
-                            Price = 3939.2399999999998,
-                            SpecialTag = "Тег 2"
+                            Name = "Лоснящийся Деревянный Плащ",
+                            Price = 2125.1500000000001,
+                            SpecialTag = "Тег 1"
                         },
                         new
                         {
                             Id = 5,
-                            Category = "Категория 3",
-                            Description = "Поставленных широкому по высшего финансовых проект.",
+                            Category = "Категория 2",
+                            Description = "Существующий модернизации роль существующий определения по образом активности качества.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Маленький Пластиковый Майка",
-                            Price = 772.50999999999999,
-                            SpecialTag = "Тег 2"
+                            Name = "Фантастический Неодимовый Кошелек",
+                            Price = 3078.2199999999998,
+                            SpecialTag = "Тег 1"
                         });
                 });
 
@@ -524,42 +450,9 @@ namespace shop.Migrations
                     b.Navigation("ShoppingCart");
                 });
 
-            modelBuilder.Entity("shop.Model.Entitys.Order.Order", b =>
-                {
-                    b.HasOne("shop.Model.AppUser", "AppUser")
-                        .WithMany()
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-                });
-
-            modelBuilder.Entity("shop.Model.Entitys.Order.OrderDetails", b =>
-                {
-                    b.HasOne("shop.Model.Entitys.Order.Order", null)
-                        .WithMany("OrderDetailItems")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("shop.Model.Entitys.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("shop.Model.Entitys.Cart.ShoppingCart", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("shop.Model.Entitys.Order.Order", b =>
-                {
-                    b.Navigation("OrderDetailItems");
                 });
 
             modelBuilder.Entity("shop.Model.Entitys.Product", b =>

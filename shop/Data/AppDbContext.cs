@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using shop.Model;
 using shop.Model.Entitys;
 using shop.Model.Entitys.Cart;
+using shop.Model.Entitys.Order;
 using shop.Seed;
 
 namespace shop.Data
@@ -20,6 +21,8 @@ namespace shop.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<ShoppingCart> Carts { get; set; }
+        public DbSet<OrderDetails> OrderDetails { get; set; }
+        public DbSet<Order> Order { get; set; }
        
 
         protected override void OnModelCreating(ModelBuilder builder)
