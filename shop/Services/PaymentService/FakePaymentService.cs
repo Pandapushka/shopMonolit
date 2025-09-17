@@ -17,20 +17,10 @@ namespace shop.Services.PaymentService
         }
         public async Task<ActionResult<ResponseServer<string>>> HandlerPaymentAsync(string userId, int orderId, string cardNumber)
         {
-            var cart = await _context.Carts.Include(x => x.Items)
-                .ThenInclude(x=>x.Product)
-                .FirstOrDefaultAsync(x=>x.UserID == userId);
-
-            if (cart == null || cart.Items == null || cart.Items.Count == 0)
-                return new BadRequestObjectResult(ResponseServer<string>.Error("Произошла ошибка при получении данных корзины"));
 
             var order = await _context.Order.FindAsync(orderId);
             if (order == null)
                 return new BadRequestObjectResult(ResponseServer<string>.Error("Произошла ошибка при получении данных о заказе"));
-
-
-
-            cart.TotalAmount = cart.Items.Sum(x => x.Quantity * x.Product.Price);
 
             PaymentResponse response;
             if (cardNumber == "1111 2222 3333 4444")
@@ -54,7 +44,7 @@ namespace shop.Services.PaymentService
                 return new BadRequestObjectResult(ResponseServer<string>.Error("Оплата данной картой не прошла"));
 
             
-            order.Status = OrderStatus.Confirmed;
+            order.Status = OrderStatus.Payment;
             await _context.SaveChangesAsync();
 
             return ResponseServer<string>.Success("Заказ оплачен", 200);

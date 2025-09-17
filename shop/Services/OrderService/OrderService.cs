@@ -4,59 +4,91 @@ using shop.Data;
 using shop.Model.Entitys.Order;
 using shop.ModelDTO.OrderDTO;
 using shop.Seed;
+using shop.Services.CartService;
 
 namespace shop.Services.OrderService
 {
     public class OrderService : IOrderService
     {
         private readonly AppDbContext _appDbContext;
-        public OrderService(AppDbContext appDbContext) 
+        private readonly ICartService _cartService;
+        public OrderService(AppDbContext appDbContext, ICartService cartService) 
         {
             _appDbContext = appDbContext;
+            _cartService = cartService;
         }
 
-        public async Task<Order> CreateOrderAsync(OrderCreateDTO orderCreateDTO)
+        public async Task<Order> CreateOrderFromCartAsync(OrderCreateFromCartDTO orderDto)
         {
+            if (orderDto == null)
+                throw new ArgumentNullException(nameof(orderDto));
+
+            if (string.IsNullOrWhiteSpace(orderDto.UserID))
+                throw new ArgumentException("UserID обязателен для создания заказа", nameof(orderDto.UserID));
+
+            var userId = orderDto.UserID;
+
+            var transaction = await _appDbContext.Database.BeginTransactionAsync();
+
             try
             {
+                var cart = await _appDbContext.Carts
+                    .Include(c => c.Items)
+                        .ThenInclude(i => i.Product)
+                    .FirstOrDefaultAsync(c => c.UserID == userId);
+
+                if (cart == null || !cart.Items.Any())
+                    throw new InvalidOperationException("Корзина пуста или не существует");
+
+                foreach (var item in cart.Items)
+                {
+                    if (item.Product == null)
+                        throw new InvalidOperationException($"Товар с ID {item.ProductId} не найден в базе данных.");
+                }
+
+                double orderTotalAmount = cart.Items.Sum(i => i.Quantity * i.Product.Price);
+                int totalCount = cart.Items.Sum(i => i.Quantity);
+
                 var order = new Order
                 {
-                    CustomerName = orderCreateDTO.CustomerName,
-                    CustomerAddress = orderCreateDTO.CustomerAddress,
-                    CustomerEmail = orderCreateDTO.CustomerEmail,
-                    AppUserId = orderCreateDTO.AppUserId,
-                    OrderTotalAmount = orderCreateDTO.OrderTotalAmount,
-                    TotalCount = orderCreateDTO.TotalCount,
-                    Status = string.IsNullOrEmpty(orderCreateDTO.Status) ? OrderStatus.Accepted : orderCreateDTO.Status,
-                    OrderDateTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc)
+                    CustomerName = orderDto.CustomerName ?? throw new ArgumentException("Имя клиента обязательно"),
+                    CustomerEmail = orderDto.CustomerEmail,
+                    CustomerAddress = orderDto.CustomerAddress,
+                    AppUserId = userId,
+                    OrderTotalAmount = orderTotalAmount,
+                    TotalCount = totalCount,
+                    Status = OrderStatus.Accepted,
+                    OrderDateTime = DateTime.UtcNow,
+                    OrderDetailItems = new List<OrderDetails>() 
                 };
 
                 await _appDbContext.Order.AddAsync(order);
-                await _appDbContext.SaveChangesAsync();
+                await _appDbContext.SaveChangesAsync(); 
 
-                if (orderCreateDTO.OrderDetailItems != null)
+                foreach (var cartItem in cart.Items)
                 {
-                    foreach (var orderDetailsDto in orderCreateDTO.OrderDetailItems)
+                    var orderDetail = new OrderDetails
                     {
-                        var orderDetails = new OrderDetails
-                        {
-                            OrderId = order.Id,
-                            ProductId = orderDetailsDto.ProductId,
-                            Quantity = orderDetailsDto.Quantity,
-                            ItemName = orderDetailsDto.ItemName,
-                            Price = orderDetailsDto.Price
-                        };
+                        OrderId = order.Id,
+                        ProductId = cartItem.ProductId,
+                        Quantity = cartItem.Quantity,
+                        ItemName = cartItem.Product.Name,
+                        Price = cartItem.Product.Price
+                    };
 
-                        await _appDbContext.OrderDetails.AddAsync(orderDetails);
-                    }
-                    await _appDbContext.SaveChangesAsync();
+                    await _appDbContext.OrderDetails.AddAsync(orderDetail);
                 }
+
+                await _appDbContext.SaveChangesAsync();
+                await _cartService.ClearCartAsync(userId);
+                await transaction.CommitAsync();
 
                 return order;
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception($"Ошибка при создании заказа: {ex.Message}", ex);
+                await transaction.RollbackAsync();
+                throw;
             }
         }
 

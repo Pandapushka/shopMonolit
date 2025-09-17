@@ -16,21 +16,19 @@ namespace shop.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ResponseServer<string>>> Create([FromBody] OrderCreateDTO orderCreateDTO)
+        public async Task<ActionResult<ResponseServer<string>>> CreateFromCart(
+             [FromBody] OrderCreateFromCartDTO orderDto)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ResponseServer<string>.Error("Неверное состояник модели заказа"));
-                 
-            }
+                return BadRequest(ResponseServer<string>.Error("Неверные данные заказа"));
             try
             {
-                var order = await _orderService.CreateOrderAsync(orderCreateDTO);
-                return Ok(ResponseServer<string>.Success($"Заказ номер {order.Id} успешно создан", 200)); 
+                var order = await _orderService.CreateOrderFromCartAsync(orderDto);
+                return Ok(ResponseServer<string>.Success($"Заказ №{order.Id} успешно создан", 200));
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                return StatusCode(500, ResponseServer<string>.Error(ex.Message, 500));
+                return StatusCode(500, ResponseServer<string>.Error($"Ошибка при создании заказа: {ex.Message}", 500));
             }
         }
         [HttpGet("{id:int}")]
