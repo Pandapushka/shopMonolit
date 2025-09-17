@@ -148,7 +148,7 @@ namespace shop.Services.CartService
                 if (existingCart == null)
                     throw new ArgumentException("Корзина не найдена");
 
-                // Удаляем только элементы корзины, сохраняем саму корзину
+              
                 _appDbContext.CartItems.RemoveRange(existingCart.Items);
 
                 await _appDbContext.SaveChangesAsync();

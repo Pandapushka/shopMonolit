@@ -33,6 +33,7 @@ namespace shop
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddCartService();
             builder.Services.AddOrderService();
+            builder.Services.AddPaymentService();
 
             var app = builder.Build();
 

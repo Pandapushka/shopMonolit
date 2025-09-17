@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using shop.Model;
-using shop.Model.Entitys;
 using shop.Model.Entitys.Order;
 using shop.ModelDTO.OrderDTO;
 using shop.Services.OrderService;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace shop.Controllers
 {
