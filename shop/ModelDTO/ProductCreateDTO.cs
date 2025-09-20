@@ -14,6 +14,6 @@ namespace shop.ModelDTO
         [Range(1, 200000)]
         public double Price { get; set; }
         [Required]
-        public string Image { get; set; } = string.Empty;
+        public IFormFile Image { get; set; }
     }
 }

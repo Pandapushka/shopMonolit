@@ -5,6 +5,7 @@ using shop.Model;
 using shop.Model.Entitys;
 using shop.ModelDTO;
 using shop.Services.ProductService;
+using shop.Services.Storage;
 using System.Net;
 
 namespace shop.Controllers
@@ -12,9 +13,11 @@ namespace shop.Controllers
     public class ProductController : StoreController
     {
         private readonly IProductService _productService;
-        public ProductController(IProductService productService)
+        private readonly IFileStorageService _fileStorageService;
+        public ProductController(IProductService productService, IFileStorageService fileStorageService)
         {
             _productService = productService;
+            _fileStorageService = fileStorageService;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -43,7 +46,7 @@ namespace shop.Controllers
         }
         [HttpPost]
         public async Task<ActionResult<ResponseServer<string>>> Create(
-            [FromBody] ProductCreateDTO createDTO)
+            [FromForm] ProductCreateDTO createDTO)
         {
             try
             {
@@ -65,7 +68,7 @@ namespace shop.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult<ResponseServer<string>>> Update(int id, [FromBody] ProductCreateDTO updateDTO)
+        public async Task<ActionResult<ResponseServer<string>>> Update(int id, [FromForm] ProductCreateDTO updateDTO)
         {
             try
             {

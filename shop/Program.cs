@@ -27,6 +27,7 @@ namespace shop
             builder.Services.AddConfigureIdentityOptions();
             builder.Services.AddJwtTokenGenerator();
             builder.Services.AddCors();
+            builder.Services.AddFileStorageService(builder.Configuration);
 
 
             builder.Services.AddScoped<IProductService, ProductService>();

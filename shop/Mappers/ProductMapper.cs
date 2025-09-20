@@ -5,7 +5,7 @@ namespace shop.Mappers
 {
     public class ProductMapper
     {
-        public static Product ToProduct(ProductCreateDTO createDTO)
+        public static Product ToProduct(ProductCreateDTO createDTO, string image)
         {
             Product product = new()
             {
@@ -14,7 +14,7 @@ namespace shop.Mappers
                 SpecialTag = createDTO.SpecialTag,
                 Category = createDTO.Category,
                 Price = createDTO.Price,
-                Image = createDTO.Image
+                Image = image
             };
             return product;
         }

@@ -4,15 +4,18 @@ using shop.Data;
 using shop.Mappers;
 using shop.Model.Entitys;
 using shop.ModelDTO;
+using shop.Services.Storage;
 
 namespace shop.Services.ProductService
 {
     public class ProductService : IProductService
     {
         private readonly AppDbContext _context;
-        public ProductService(AppDbContext context)
+        private readonly IFileStorageService _fileStorageService;
+        public ProductService(AppDbContext context, IFileStorageService fileStorageService)
         {
             _context = context;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<IEnumerable<Product>> GetAll()
@@ -50,7 +53,7 @@ namespace shop.Services.ProductService
                 if (productCreateDTO == null)
                     throw new ArgumentNullException("Пришла пустая модель продукта");
 
-                var product = ProductMapper.ToProduct(productCreateDTO);
+                var product = ProductMapper.ToProduct(productCreateDTO, await _fileStorageService.UploadFileAsync(productCreateDTO.Image));
 
                 _context.Products.Add(product);
                 await _context.SaveChangesAsync();
@@ -90,8 +93,8 @@ namespace shop.Services.ProductService
                 if(productCreateDTO.Price != 0)
                     productFromDb.Price = productCreateDTO.Price;
 
-                if (!String.IsNullOrEmpty(productCreateDTO.Image))
-                    productFromDb.Image = productCreateDTO.Image;
+                if ((productCreateDTO.Image != null))
+                    productFromDb.Image = await _fileStorageService.UploadFileAsync(productCreateDTO.Image);
 
                 _context.Products.Update(productFromDb);
                 await _context.SaveChangesAsync();
