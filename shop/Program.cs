@@ -1,3 +1,4 @@
+﻿using Microsoft.AspNetCore.Authentication;
 using shop.Extension;
 using shop.Services.AuthService;
 using shop.Services.ProductService;
@@ -10,25 +11,36 @@ namespace shop
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
-
-
             builder.Services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-                options.JsonSerializerOptions.WriteIndented = true;
-            });
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                    options.JsonSerializerOptions.WriteIndented = true;
+                });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGenCustomConfig();
+
             builder.Services.AddPostgreSqlDbContext(builder.Configuration);
             builder.Services.AddPostgreSqlIdentityContext();
             builder.Services.AddAdminInitializer();
             builder.Services.AddConfigureIdentityOptions();
             builder.Services.AddJwtTokenGenerator();
-            builder.Services.AddCors();
-            builder.Services.AddFileStorageService(builder.Configuration);
 
+            builder.Services.AddAuthenticationConfig(builder.Configuration);
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .WithExposedHeaders("*");
+                });
+            });
+
+            builder.Services.AddFileStorageService(builder.Configuration);
 
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -43,6 +55,7 @@ namespace shop
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
             await app.Services.InitializeRoleAsync();
 
             using (var scope = app.Services.CreateScope())
@@ -50,15 +63,9 @@ namespace shop
                 var adminService = scope.ServiceProvider.GetRequiredService<AdminInitializerService>();
                 await adminService.InitializeAdminAsync();
             }
-            app.UseCors(o=>
-                o.AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin()
-                .WithExposedHeaders("*")
-                );
-
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

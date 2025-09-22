@@ -1,23 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using shop.Common;
 using shop.Data;
 using shop.Model;
 using shop.Model.Entitys;
 using shop.ModelDTO;
 using shop.Services.ProductService;
 using shop.Services.Storage;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Text;
 
 namespace shop.Controllers
 {
     public class ProductController : StoreController
     {
         private readonly IProductService _productService;
-        private readonly IFileStorageService _fileStorageService;
-        public ProductController(IProductService productService, IFileStorageService fileStorageService)
+        public ProductController(IProductService productService)
         {
             _productService = productService;
-            _fileStorageService = fileStorageService;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -44,7 +47,8 @@ namespace shop.Controllers
                 return BadRequest(ResponseServer<Product>.Error(ex.Message));
             }
         }
-        [HttpPost]
+        [HttpPost("Create")]
+        [Authorize(Roles = SharedData.Roles.Admin)]
         public async Task<ActionResult<ResponseServer<string>>> Create(
             [FromForm] ProductCreateDTO createDTO)
         {
