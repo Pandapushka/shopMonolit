@@ -20,7 +20,7 @@ namespace shop.Extension
             })
                .AddJwtBearer(options =>
                {
-                   options.RequireHttpsMetadata = false; // Для development
+                   options.RequireHttpsMetadata = false;
                    options.SaveToken = true;
 
                    options.TokenValidationParameters = new TokenValidationParameters

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using shop.Extension;
+using shop.Model.Email;
 using shop.Services.AuthService;
+using shop.Services.EmailService;
 using shop.Services.ProductService;
 
 namespace shop
@@ -44,6 +46,8 @@ namespace shop
 
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+            builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddCartService();
             builder.Services.AddOrderService();
             builder.Services.AddPaymentService();

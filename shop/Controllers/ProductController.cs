@@ -48,7 +48,7 @@ namespace shop.Controllers
             }
         }
         [HttpPost("Create")]
-        [Authorize(Roles = SharedData.Roles.Admin)]
+        [Authorize(Roles = $"{SharedData.Roles.Admin},{SharedData.Roles.Consumer}")]
         public async Task<ActionResult<ResponseServer<string>>> Create(
             [FromForm] ProductCreateDTO createDTO)
         {

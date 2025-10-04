@@ -5,6 +5,7 @@ using shop.Model.Entitys.Order;
 using shop.ModelDTO.OrderDTO;
 using shop.Seed;
 using shop.Services.CartService;
+using shop.Services.EmailService;
 
 namespace shop.Services.OrderService
 {
@@ -12,10 +13,13 @@ namespace shop.Services.OrderService
     {
         private readonly AppDbContext _appDbContext;
         private readonly ICartService _cartService;
-        public OrderService(AppDbContext appDbContext, ICartService cartService) 
+        private readonly IEmailService _emailService;
+
+        public OrderService(AppDbContext appDbContext, ICartService cartService, IEmailService emailService)
         {
             _appDbContext = appDbContext;
             _cartService = cartService;
+            _emailService = emailService;
         }
 
         public async Task<Order> CreateOrderFromCartAsync(OrderCreateFromCartDTO orderDto)
@@ -59,11 +63,11 @@ namespace shop.Services.OrderService
                     TotalCount = totalCount,
                     Status = OrderStatus.Accepted,
                     OrderDateTime = DateTime.UtcNow,
-                    OrderDetailItems = new List<OrderDetails>() 
+                    OrderDetailItems = new List<OrderDetails>()
                 };
 
                 await _appDbContext.Order.AddAsync(order);
-                await _appDbContext.SaveChangesAsync(); 
+                await _appDbContext.SaveChangesAsync(); // Сохраняем, чтобы получить order.Id
 
                 foreach (var cartItem in cart.Items)
                 {
@@ -82,6 +86,15 @@ namespace shop.Services.OrderService
                 await _appDbContext.SaveChangesAsync();
                 await _cartService.ClearCartAsync(userId);
                 await transaction.CommitAsync();
+
+                // ✅ Отправляем email после успешного создания заказа
+                await _emailService.SendOrderConfirmationEmailAsync(
+                    userEmail: order.CustomerEmail,
+                    userName: order.CustomerName,
+                    orderId: order.Id,
+                    totalAmount: order.OrderTotalAmount,
+                    orderDate: order.OrderDateTime
+                );
 
                 return order;
             }
