@@ -67,6 +67,7 @@ namespace shop.Controllers
         [HttpPut("{userId}/items/{productId}")]
         public async Task<ActionResult<ResponseServer<string>>> UpdateItem(string userId, int productId, [FromQuery] int quantity)
         {
+            var i = 0;
             try
             {
                 await _cartService.UpdateExistingCartAsync(userId, productId, quantity);
