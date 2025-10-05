@@ -6,6 +6,7 @@ using shop.ModelDTO.OrderDTO;
 using shop.Seed;
 using shop.Services.CartService;
 using shop.Services.EmailService;
+using System.Linq;
 
 namespace shop.Services.OrderService
 {
@@ -36,6 +37,17 @@ namespace shop.Services.OrderService
 
             try
             {
+
+                var user = await _appDbContext.AppUsers.FirstOrDefaultAsync(i => i.Id == userId);
+                
+                if (user == null)
+                    throw new InvalidOperationException("Не корректный пользователь");
+
+                if(!user.EmailConfirmed)
+                    throw new InvalidOperationException("Пользователь с неподтвержденным Email не может делать заказы");
+
+
+
                 var cart = await _appDbContext.Carts
                     .Include(c => c.Items)
                         .ThenInclude(i => i.Product)
@@ -56,7 +68,7 @@ namespace shop.Services.OrderService
                 var order = new Order
                 {
                     CustomerName = orderDto.CustomerName ?? throw new ArgumentException("Имя клиента обязательно"),
-                    CustomerEmail = orderDto.CustomerEmail,
+                    CustomerEmail = user.Email,
                     CustomerAddress = orderDto.CustomerAddress,
                     AppUserId = userId,
                     OrderTotalAmount = orderTotalAmount,
@@ -67,7 +79,7 @@ namespace shop.Services.OrderService
                 };
 
                 await _appDbContext.Order.AddAsync(order);
-                await _appDbContext.SaveChangesAsync(); // Сохраняем, чтобы получить order.Id
+                await _appDbContext.SaveChangesAsync(); 
 
                 foreach (var cartItem in cart.Items)
                 {
@@ -87,7 +99,7 @@ namespace shop.Services.OrderService
                 await _cartService.ClearCartAsync(userId);
                 await transaction.CommitAsync();
 
-                // ✅ Отправляем email после успешного создания заказа
+               
                 await _emailService.SendOrderConfirmationEmailAsync(
                     userEmail: order.CustomerEmail,
                     userName: order.CustomerName,

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using shop.Common;
 using shop.Model;
 using shop.Model.Entitys.Order;
 using shop.ModelDTO.OrderDTO;
@@ -16,6 +18,7 @@ namespace shop.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = $"{SharedData.Roles.Admin},{SharedData.Roles.Consumer}")]
         public async Task<ActionResult<ResponseServer<string>>> CreateFromCart(
              [FromBody] OrderCreateFromCartDTO orderDto)
         {

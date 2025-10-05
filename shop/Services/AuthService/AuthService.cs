@@ -24,6 +24,7 @@ namespace shop.Services.AuthService
             _userManager = userManager;
             _roleManager = roleManager;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _emailConfirmationService = emailConfirmationService;
         }
         
         public async Task Register(RegisterRequestDTO registerRequestDTO)

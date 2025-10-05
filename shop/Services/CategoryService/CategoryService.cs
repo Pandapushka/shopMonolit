@@ -125,11 +125,9 @@ namespace shop.Services.CategoryService
             if (category == null)
                 throw new ArgumentException($"Категория с ID {id} не найдена");
 
-            // Проверяем можно ли удалить категорию
             if (category.Products.Any(p => !p.IsDeleted))
                 throw new InvalidOperationException("Невозможно удалить категорию, так как к ней привязаны товары");
 
-            // Удаляем изображение
             if (!string.IsNullOrEmpty(category.ImageUrl))
             {
                 await _fileStorageService.RemoveFileAsync(category.ImageUrl);

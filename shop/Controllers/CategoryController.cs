@@ -52,8 +52,7 @@ namespace shop.Controllers
         }
 
         [HttpPost]
-        [ActionName("Create")]
-        //[Authorize(Roles = SharedData.Roles.Admin)]
+        [Authorize(Roles = SharedData.Roles.Admin)]
         public async Task<IActionResult> Create([FromForm] CategoryCreateDTO categoryDto)
         {
             try

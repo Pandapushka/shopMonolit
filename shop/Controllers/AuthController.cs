@@ -17,7 +17,7 @@ namespace shop.Controllers
             _authService = authService;
         }
 
-        [HttpPost("register")]
+        [HttpPost]
         public async Task<ActionResult<ResponseServer<string>>> Register([FromBody] RegisterRequestDTO registerDTO)
         {
             try
@@ -41,7 +41,7 @@ namespace shop.Controllers
             }
         }
 
-        [HttpPost("login")]
+        [HttpPost]
         public async Task<ActionResult<ResponseServer<LoginResponseDTO>>> Login([FromBody] LoginRequestDTO loginRequestDTO)
         {
             try
@@ -65,7 +65,7 @@ namespace shop.Controllers
             }
         }
 
-        [HttpPost("confirm-email")]
+        [HttpPost]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequestDTO request)
         {
             try
@@ -83,7 +83,7 @@ namespace shop.Controllers
             }
         }
 
-        [HttpPost("resend-confirmation")]
+        [HttpPost]
         public async Task<IActionResult> ResendConfirmation([FromBody] ResendCodeRequestDTO request)
         {
             try
