@@ -12,8 +12,8 @@ using shop.Data;
 namespace shop.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250823112726_Add_Cart")]
-    partial class Add_Cart
+    [Migration("20251005142907_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -253,7 +253,7 @@ namespace shop.Migrations
 
                     b.HasIndex("ShoppingCartId");
 
-                    b.ToTable("Items");
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("shop.Model.Entitys.Cart.ShoppingCart", b =>
@@ -273,6 +273,123 @@ namespace shop.Migrations
                     b.ToTable("Carts");
                 });
 
+            modelBuilder.Entity("shop.Model.Entitys.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Bar",
+                            ImageUrl = "https://s3.twcstorage.ru/2d0ce14a-f23b89b9-0eff-4dd9-9032-96409551c4d9/12121212_77cda043fc174098b88746853a31adaa.PNG",
+                            IsActive = true,
+                            Name = "Foo"
+                        });
+                });
+
+            modelBuilder.Entity("shop.Model.Entitys.Order.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CustomerAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OrderDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("OrderTotalAmount")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TotalCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("shop.Model.Entitys.Order.OrderDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderDetails");
+                });
+
             modelBuilder.Entity("shop.Model.Entitys.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -281,9 +398,8 @@ namespace shop.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -309,69 +425,77 @@ namespace shop.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Category = "Категория 3",
-                            Description = "Позволяет позволяет другой формирования оценить качества.",
+                            CategoryId = 1,
+                            Description = "Очевидна кадров задания эксперимент задач подготовке целесообразности зависит.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Практичный Меховой Майка",
-                            Price = 4526.0799999999999,
+                            Name = "Великолепный Хлопковый Сабо",
+                            Price = 1.0900000000000001,
                             SpecialTag = "Тег 2"
                         },
                         new
                         {
                             Id = 2,
-                            Category = "Категория 2",
-                            Description = "Однако зависит степени рамки создание сомнений общественной.",
+                            CategoryId = 1,
+                            Description = "Вызывает сомнений уровня позиции актуальность богатый высокотехнологичная идейные.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Большой Бетонный Свитер",
-                            Price = 4567.5500000000002,
-                            SpecialTag = "Тег 1"
+                            Name = "Грубый Меховой Кулон",
+                            Price = 3412.5599999999999,
+                            SpecialTag = "Тег 2"
                         },
                         new
                         {
                             Id = 3,
-                            Category = "Категория 2",
-                            Description = "Выбранный очевидна развития управление обуславливает идейные.",
+                            CategoryId = 1,
+                            Description = "Целесообразности отметить модели.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Грубый Меховой Клатч",
-                            Price = 1245.25,
-                            SpecialTag = "Тег 1"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Category = "Категория 1",
-                            Description = "Порядка зависит повседневная принципов зависит демократической сущности.",
-                            Image = "https://placehold.net/400x400.png",
-                            IsDeleted = false,
-                            Name = "Большой Деревянный Плащ",
-                            Price = 1782.6500000000001,
+                            Name = "Свободный Неодимовый Майка",
+                            Price = 935.99000000000001,
                             SpecialTag = "Тег 3"
                         },
                         new
                         {
-                            Id = 5,
-                            Category = "Категория 1",
-                            Description = "Обеспечивает напрямую кадров проект и нашей существующий предложений всего новая.",
+                            Id = 4,
+                            CategoryId = 1,
+                            Description = "Интересный насущным концепция национальный формирования идейные повседневной.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Свободный Стальной Стол",
-                            Price = 1808.1199999999999,
+                            Name = "Эргономичный Стальной Кошелек",
+                            Price = 941.62,
                             SpecialTag = "Тег 1"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 1,
+                            Description = "Нами консультация постоянное процесс отношении важную дальнейшее широкому соответствующей.",
+                            Image = "https://placehold.net/400x400.png",
+                            IsDeleted = false,
+                            Name = "Практичный Натуральный Носки",
+                            Price = 3566.8099999999999,
+                            SpecialTag = "Тег 2"
                         });
                 });
 
             modelBuilder.Entity("shop.Model.AppUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("EmailConfirmationCode")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EmailConfirmationCodeExpires")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserLastName")
                         .IsRequired()
@@ -434,7 +558,7 @@ namespace shop.Migrations
             modelBuilder.Entity("shop.Model.Entitys.Cart.CartItem", b =>
                 {
                     b.HasOne("shop.Model.Entitys.Product", "Product")
-                        .WithMany()
+                        .WithMany("CartItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -450,9 +574,63 @@ namespace shop.Migrations
                     b.Navigation("ShoppingCart");
                 });
 
+            modelBuilder.Entity("shop.Model.Entitys.Order.Order", b =>
+                {
+                    b.HasOne("shop.Model.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("shop.Model.Entitys.Order.OrderDetails", b =>
+                {
+                    b.HasOne("shop.Model.Entitys.Order.Order", null)
+                        .WithMany("OrderDetailItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("shop.Model.Entitys.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("shop.Model.Entitys.Product", b =>
+                {
+                    b.HasOne("shop.Model.Entitys.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("shop.Model.Entitys.Cart.ShoppingCart", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("shop.Model.Entitys.Category", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("shop.Model.Entitys.Order.Order", b =>
+                {
+                    b.Navigation("OrderDetailItems");
+                });
+
+            modelBuilder.Entity("shop.Model.Entitys.Product", b =>
+                {
+                    b.Navigation("CartItems");
                 });
 #pragma warning restore 612, 618
         }

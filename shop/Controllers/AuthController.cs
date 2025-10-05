@@ -2,15 +2,18 @@
 using shop.Model;
 using shop.ModelDTO;
 using shop.Services.AuthService;
+using shop.Services.EmailConfirmationService;
 
 namespace shop.Controllers
 {
     public class AuthController : StoreController
     {
         private readonly IAuthService _authService;
+        private readonly IEmailConfirmationService _emailConfirmationService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IEmailConfirmationService emailConfirmationService)
         {
+            _emailConfirmationService = emailConfirmationService;
             _authService = authService;
         }
 
@@ -59,6 +62,43 @@ namespace shop.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, ResponseServer<LoginResponseDTO>.Error("Произошла ошибка при входе", 500));
+            }
+        }
+
+        [HttpPost("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequestDTO request)
+        {
+            try
+            {
+                var isValid = await _emailConfirmationService.VerifyConfirmationCodeAsync(request.Email, request.Code);
+
+                if (!isValid)
+                    return BadRequest(ResponseServer<string>.Error("Неверный код или срок действия истек"));
+
+                return Ok(ResponseServer<string>.Success("Email успешно подтвержден"));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ResponseServer<string>.Error(ex.Message));
+            }
+        }
+
+        [HttpPost("resend-confirmation")]
+        public async Task<IActionResult> ResendConfirmation([FromBody] ResendCodeRequestDTO request)
+        {
+            try
+            {
+                var code = await _emailConfirmationService.GenerateConfirmationCodeAsync(request.Email);
+                var sent = await _emailConfirmationService.SendConfirmationCodeAsync(request.Email, code);
+
+                if (!sent)
+                    return BadRequest(ResponseServer<string>.Error("Ошибка отправки кода"));
+
+                return Ok(ResponseServer<string>.Success("Новый код отправлен на ваш email"));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ResponseServer<string>.Error(ex.Message));
             }
         }
 

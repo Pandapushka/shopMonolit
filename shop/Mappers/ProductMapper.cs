@@ -12,7 +12,7 @@ namespace shop.Mappers
                 Name = createDTO.Name,
                 Description = createDTO.Description,
                 SpecialTag = createDTO.SpecialTag,
-                Category = createDTO.Category,
+                CategoryId = createDTO.CategoryId,
                 Price = createDTO.Price,
                 Image = image
             };

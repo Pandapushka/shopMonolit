@@ -270,6 +270,46 @@ namespace shop.Migrations
                     b.ToTable("Carts");
                 });
 
+            modelBuilder.Entity("shop.Model.Entitys.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Bar",
+                            ImageUrl = "https://s3.twcstorage.ru/2d0ce14a-f23b89b9-0eff-4dd9-9032-96409551c4d9/12121212_77cda043fc174098b88746853a31adaa.PNG",
+                            IsActive = true,
+                            Name = "Foo"
+                        });
+                });
+
             modelBuilder.Entity("shop.Model.Entitys.Order.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -355,9 +395,8 @@ namespace shop.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -383,69 +422,77 @@ namespace shop.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Category = "Категория 2",
-                            Description = "Административных не позволяет представляет постоянное систему последовательного же.",
+                            CategoryId = 1,
+                            Description = "Очевидна кадров задания эксперимент задач подготовке целесообразности зависит.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Интеллектуальный Кожанный Носки",
-                            Price = 353.60000000000002,
-                            SpecialTag = "Тег 3"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Category = "Категория 3",
-                            Description = "Сомнений административных важные.",
-                            Image = "https://placehold.net/400x400.png",
-                            IsDeleted = false,
-                            Name = "Интеллектуальный Неодимовый Клатч",
-                            Price = 969.84000000000003,
-                            SpecialTag = "Тег 3"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Category = "Категория 3",
-                            Description = "Проблем реализация всего шагов.",
-                            Image = "https://placehold.net/400x400.png",
-                            IsDeleted = false,
-                            Name = "Великолепный Хлопковый Шарф",
-                            Price = 60.579999999999998,
+                            Name = "Великолепный Хлопковый Сабо",
+                            Price = 1.0900000000000001,
                             SpecialTag = "Тег 2"
                         },
                         new
                         {
-                            Id = 4,
-                            Category = "Категория 2",
-                            Description = "Укрепления таким на соображения деятельности.",
+                            Id = 2,
+                            CategoryId = 1,
+                            Description = "Вызывает сомнений уровня позиции актуальность богатый высокотехнологичная идейные.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Практичный Резиновый Ботинок",
-                            Price = 2633.8200000000002,
+                            Name = "Грубый Меховой Кулон",
+                            Price = 3412.5599999999999,
+                            SpecialTag = "Тег 2"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            Description = "Целесообразности отметить модели.",
+                            Image = "https://placehold.net/400x400.png",
+                            IsDeleted = false,
+                            Name = "Свободный Неодимовый Майка",
+                            Price = 935.99000000000001,
                             SpecialTag = "Тег 3"
                         },
                         new
                         {
-                            Id = 5,
-                            Category = "Категория 1",
-                            Description = "Задания формировании последовательного общества.",
+                            Id = 4,
+                            CategoryId = 1,
+                            Description = "Интересный насущным концепция национальный формирования идейные повседневной.",
                             Image = "https://placehold.net/400x400.png",
                             IsDeleted = false,
-                            Name = "Большой Кожанный Портмоне",
-                            Price = 2430.4499999999998,
+                            Name = "Эргономичный Стальной Кошелек",
+                            Price = 941.62,
                             SpecialTag = "Тег 1"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 1,
+                            Description = "Нами консультация постоянное процесс отношении важную дальнейшее широкому соответствующей.",
+                            Image = "https://placehold.net/400x400.png",
+                            IsDeleted = false,
+                            Name = "Практичный Натуральный Носки",
+                            Price = 3566.8099999999999,
+                            SpecialTag = "Тег 2"
                         });
                 });
 
             modelBuilder.Entity("shop.Model.AppUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("EmailConfirmationCode")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EmailConfirmationCodeExpires")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserLastName")
                         .IsRequired()
@@ -552,9 +599,25 @@ namespace shop.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("shop.Model.Entitys.Product", b =>
+                {
+                    b.HasOne("shop.Model.Entitys.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("shop.Model.Entitys.Cart.ShoppingCart", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("shop.Model.Entitys.Category", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("shop.Model.Entitys.Order.Order", b =>

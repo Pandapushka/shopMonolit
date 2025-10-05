@@ -23,11 +23,15 @@ namespace shop.Data
         public DbSet<ShoppingCart> Carts { get; set; }
         public DbSet<OrderDetails> OrderDetails { get; set; }
         public DbSet<Order> Order { get; set; }
-       
+        public DbSet<Category> Categories { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
+            builder.Entity<Category>().HasData(FakeProductGenerator.GenerateCategory());
             builder.Entity<Product>().HasData(FakeProductGenerator.GenerateProductList());
 
             builder.Entity<CartItem>()

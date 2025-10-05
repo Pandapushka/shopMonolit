@@ -9,7 +9,8 @@ namespace shop.ModelDTO
         [Required]
         public string Description { get; set; } = string.Empty;
         public string SpecialTag { get; set; } = string.Empty;
-        public string Category { get; set; } = string.Empty;
+        [Required]
+        public int CategoryId { get; set; }
         [Required]
         [Range(1, 200000)]
         public double Price { get; set; }

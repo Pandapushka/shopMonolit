@@ -4,6 +4,7 @@ using shop.Common;
 using shop.Data;
 using shop.Model;
 using shop.ModelDTO;
+using shop.Services.EmailConfirmationService;
 using shop.Services.JwtService;
 
 namespace shop.Services.AuthService
@@ -14,9 +15,10 @@ namespace shop.Services.AuthService
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly AppDbContext _appDbContext;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
+        private readonly IEmailConfirmationService _emailConfirmationService;
         public AuthService(AppDbContext appDbContext,
             UserManager<AppUser> userManager,
-            RoleManager<IdentityRole> roleManager, JwtTokenGenerator jwtTokenGenerator)
+            RoleManager<IdentityRole> roleManager, JwtTokenGenerator jwtTokenGenerator, IEmailConfirmationService emailConfirmationService)
         {
             _appDbContext = appDbContext;
             _userManager = userManager;
@@ -44,10 +46,14 @@ namespace shop.Services.AuthService
                 {
                     Email = registerRequestDTO.Email,
                     UserName = registerRequestDTO.UserName,
-                    NormalizedEmail = registerRequestDTO.Email.ToUpper()
+                    NormalizedEmail = registerRequestDTO.Email.ToUpper(),
+                    EmailConfirmed = false
                 };
 
                 var result = await _userManager.CreateAsync(newAppUser, registerRequestDTO.Password);
+
+                var code = await _emailConfirmationService.GenerateConfirmationCodeAsync(registerRequestDTO.Email);
+                await _emailConfirmationService.SendConfirmationCodeAsync(registerRequestDTO.Email, code);
 
                 if (!result.Succeeded)
                     throw new ArgumentNullException("Ошибка регистрации");

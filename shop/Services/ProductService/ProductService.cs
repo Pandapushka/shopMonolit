@@ -53,6 +53,12 @@ namespace shop.Services.ProductService
                 if (productCreateDTO == null)
                     throw new ArgumentNullException("Пришла пустая модель продукта");
 
+                var categoryExists = await _context.Categories
+                    .AnyAsync(c => c.Id == productCreateDTO.CategoryId && c.IsActive);
+
+                if (!categoryExists)
+                    throw new ArgumentException("Указанная категория не существует или неактивна");
+
                 var product = ProductMapper.ToProduct(productCreateDTO, await _fileStorageService.UploadFileAsync(productCreateDTO.Image));
 
                 _context.Products.Add(product);
@@ -84,8 +90,16 @@ namespace shop.Services.ProductService
                 if (!String.IsNullOrEmpty(productCreateDTO.Description))
                     productFromDb.Description = productCreateDTO.Description;
 
-                if (!String.IsNullOrEmpty(productCreateDTO.Category))
-                    productFromDb.Category = productCreateDTO.Category;
+                if (productCreateDTO.CategoryId != 0 && productCreateDTO.CategoryId != productFromDb.CategoryId)
+                {
+                    var categoryExists = await _context.Categories
+                        .AnyAsync(c => c.Id == productCreateDTO.CategoryId && c.IsActive);
+
+                    if (!categoryExists)
+                        throw new ArgumentException("Указанная категория не существует или неактивна");
+
+                    productFromDb.CategoryId = productCreateDTO.CategoryId;
+                }
 
                 if (!String.IsNullOrEmpty(productCreateDTO.SpecialTag))
                     productFromDb.SpecialTag = productCreateDTO.SpecialTag;

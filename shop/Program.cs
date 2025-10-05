@@ -2,6 +2,8 @@
 using shop.Extension;
 using shop.Model.Email;
 using shop.Services.AuthService;
+using shop.Services.CategoryService;
+using shop.Services.EmailConfirmationService;
 using shop.Services.EmailService;
 using shop.Services.ProductService;
 
@@ -46,6 +48,8 @@ namespace shop
 
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
             builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddCartService();

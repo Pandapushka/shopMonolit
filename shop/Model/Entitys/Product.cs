@@ -1,5 +1,6 @@
 ﻿using shop.Model.Entitys.Cart;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace shop.Model.Entitys
 {
@@ -10,7 +11,10 @@ namespace shop.Model.Entitys
         [Required]
         public string Description { get; set; } = string.Empty;
         public string SpecialTag { get; set; } = string.Empty;
-        public string Category { get; set; } = string.Empty;
+        public int CategoryId { get; set; }
+
+        [ForeignKey("CategoryId")]
+        public Category Category { get; set; }
         [Required]
         [Range(1, 200000)]
         public double Price { get; set; }
