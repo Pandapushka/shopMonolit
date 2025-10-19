@@ -97,9 +97,7 @@ namespace shop.Services.OrderService
 
                 await _appDbContext.SaveChangesAsync();
                 await _cartService.ClearCartAsync(userId);
-                await transaction.CommitAsync();
 
-               
                 await _emailService.SendOrderConfirmationEmailAsync(
                     userEmail: order.CustomerEmail,
                     userName: order.CustomerName,
@@ -107,7 +105,7 @@ namespace shop.Services.OrderService
                     totalAmount: order.OrderTotalAmount,
                     orderDate: order.OrderDateTime
                 );
-
+                await transaction.CommitAsync();
                 return order;
             }
             catch
@@ -165,8 +163,12 @@ namespace shop.Services.OrderService
                 if (!string.IsNullOrEmpty(orderUpdateDTO.CustomerAddress))
                     existingOrder.CustomerAddress = orderUpdateDTO.CustomerAddress;
 
-                if (!string.IsNullOrEmpty(orderUpdateDTO.Status))
+
+                if (!string.IsNullOrEmpty(orderUpdateDTO.Status) && existingOrder.Status != orderUpdateDTO.Status)
+                {
                     existingOrder.Status = orderUpdateDTO.Status;
+                    await _emailService.SendUpdateOrderEmail(existingOrder.CustomerName, existingOrder.CustomerEmail, orderUpdateDTO.Status);
+                }        
 
                 await _appDbContext.SaveChangesAsync();
                 return existingOrder;

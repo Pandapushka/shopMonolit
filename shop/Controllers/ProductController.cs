@@ -7,8 +7,10 @@ using shop.Data;
 using shop.Model;
 using shop.Model.Entitys;
 using shop.ModelDTO;
+using shop.ModelDTO.UserDTO;
 using shop.Services.ProductService;
 using shop.Services.Storage;
+using shop.Services.UserService;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Text;
@@ -71,6 +73,7 @@ namespace shop.Controllers
             }
         }
 
+        [Authorize(Roles = $"{SharedData.Roles.Admin}")]
         [HttpPut("{id:int}")]
         public async Task<ActionResult<ResponseServer<string>>> Update(int id, [FromForm] ProductCreateDTO updateDTO)
         {
@@ -94,6 +97,7 @@ namespace shop.Controllers
                 return StatusCode(500, ResponseServer<string>.Error("Произошла ошибка при обновлении продукта", 500));
             }
         }
+        [Authorize(Roles = $"{SharedData.Roles.Admin}")]
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<ResponseServer<string>>> Delete(int id)
         {

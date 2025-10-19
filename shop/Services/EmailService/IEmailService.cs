@@ -4,6 +4,7 @@ namespace shop.Services.EmailService
 {
     public interface IEmailService
     {
+        Task SendUpdateOrderEmail(string userName, string userEmail, string newStatus);
         Task SendEmailAsync(EmailMessage message);
         Task SendWelcomeEmailAsync(string userEmail, string userName);
         Task SendPasswordResetEmailAsync(string userEmail, string resetLink);

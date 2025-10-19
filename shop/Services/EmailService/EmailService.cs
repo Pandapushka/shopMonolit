@@ -12,6 +12,22 @@ namespace shop.Services.EmailService
             _smtpSettings = smtpSettings.Value;
         }
 
+        public async Task SendUpdateOrderEmail(string userName, string userEmail, string newStatus)
+        {
+            var body = $@"
+                <h2>Здравствуйте, {userName}!</h2>
+                <p>Стату вашего заказа изменен на: {newStatus}</p>
+                <hr>
+                <small>Это письмо отправлено автоматически. Не отвечайте на него.</small>";
+            var message = new EmailMessage
+            {
+                To = userEmail,
+                Subject = $"Статус заказа изменен!",
+                Body = body
+            };
+            await SendEmailAsync(message);
+        }
+
         public async Task SendOrderConfirmationEmailAsync(string userEmail, string userName, int orderId, double totalAmount, DateTime orderDate)
         {
             var body = $@"

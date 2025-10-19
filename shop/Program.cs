@@ -6,6 +6,7 @@ using shop.Services.CategoryService;
 using shop.Services.EmailConfirmationService;
 using shop.Services.EmailService;
 using shop.Services.ProductService;
+using shop.Services.UserService;
 
 namespace shop
 {
@@ -21,6 +22,7 @@ namespace shop
                     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
                     options.JsonSerializerOptions.WriteIndented = true;
                 });
+
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGenCustomConfig();
@@ -50,6 +52,7 @@ namespace shop
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
+            builder.Services.AddScoped<IUserProfileService, UserProfileService>();
             builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddCartService();
